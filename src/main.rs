@@ -1,87 +1,85 @@
-use axum::{
-    routing::{
-        get,
-        post,
-    },
-    Router,
-    Json,
-    response::IntoResponse,
-    http::StatusCode,
-};
+use std::sync::Arc;
+use axum::{Router, routing::{get, post}, extract::State, Json, response::IntoResponse, http::StatusCode};
+use tokio::sync::RwLock;
+use serde_json::json;
+use sqlx::{Pool, postgres::Postgres};
+use dotenvy::dotenv;
+use log::info;
+use log4rs;
 
-use serde::{
-    Serialize,
-    Deserialize,
-};
+mod database;
+mod model;
+use model::Order;
 
 #[tokio::main]
 async fn main() {
-    let app = Router::new().route("/add_order", post(add_order));
-    axum::Server::bind(&"127.0.0.1:8081".parse().unwrap())
+    // Инициализируем dotenv
+    dotenv().expect("Unable to access .env file");
+
+    // Инициализация log4rs
+    log4rs::init_file("log4rs.yaml", Default::default()).unwrap();
+
+    // Логируем запуск сервера
+    info!("Starting server...");
+
+    let server_address = std::env::var("SERVER_ADDRESS").unwrap_or("127.0.0.1:8081".to_owned());
+    let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL not found in env file");
+
+    let pool = sqlx::postgres::PgPool::connect(&database_url)
+        .await
+        .expect("Can't connect to database");
+
+    sqlx::migrate!("./migrations").run(&pool).await.expect("Migration failed");
+
+    let app = Router::new()
+        .route("/add_order", post(add_order))
+        .route("/get_orders", get(get_orders))
+        .with_state(Arc::new(RwLock::new(OrdersState { orders: Vec::new(), pool })));
+
+    info!("Listening on {}", server_address);
+
+    axum_server::bind(server_address.parse().unwrap())
         .serve(app.into_make_service())
         .await
         .unwrap();
 }
 
-async fn add_order(Json(order): Json<Order>) -> impl IntoResponse {
-    let pretty_json_order = serde_json::to_string_pretty(&order).unwrap();
-    (StatusCode::OK, pretty_json_order)
+type OrdersStateType = Arc<RwLock<OrdersState>>;
+
+#[derive(Clone)]
+pub struct OrdersState {
+    pub orders: Vec<Order>,
+    pub pool: Pool<Postgres>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Default)]
-struct Delivery {
-    name: String,
-    phone: String,
-    zip: String,
-    city: String,
-    address: String,
-    region: String,
-    email: String,
+pub async fn add_order(
+    State(state): State<OrdersStateType>, 
+    Json(order): Json<Order>
+) -> impl IntoResponse {
+    let mut state = state.write().await;
+    state.orders.push(order.clone());
+
+    match database::add_order_to_db(&order, &state.pool).await {
+        Ok(_) => {
+            info!("Order added successfully: {:?}", order);
+            let pretty_json_order = serde_json::to_string_pretty(&order).unwrap();
+            (StatusCode::OK, pretty_json_order)
+        }
+        Err(e) => {
+            let error_response = json!({
+                "success": false,
+                "message": e.to_string(),
+            });
+            log::error!("Failed to add order: {:?}", e);
+            (StatusCode::INTERNAL_SERVER_ERROR, error_response.to_string())
+        }
+    }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Default)]
-struct Payment {
-    transaction: String,
-    request_id: String,
-    currency: String,
-    provider: String,
-    amount: u32,
-    payment_dt: u64,
-    bank: String,
-    delivery_cost: u32,
-    goods_total: u32,
-    custom_fee: u32,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone, Default)]
-struct Item {
-    chrt_id: u64,
-    track_number: String,
-    price: u32,
-    rid: String,
-    name: String,
-    sale: u32,
-    size: String,
-    total_price: u32,
-    nm_id: u64,
-    brand: String,
-    status: u32,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone, Default)]
-struct Order {
-    order_uid: String,
-    track_number: String,
-    entry: String,
-    delivery: Delivery,
-    payment: Payment,
-    items: Vec<Item>,
-    locale: String,
-    internal_signature: String,
-    customer_id: String,
-    delivery_service: String,
-    shardkey: String,
-    sm_id: u64,
-    date_created: String,
-    oof_shard: String,
+async fn get_orders(State(state): State<OrdersStateType>) -> impl IntoResponse {
+    let pretty_json_orders = serde_json::to_string_pretty(
+        &state.read().await.orders
+    ).unwrap();
+    info!("Fetched all orders");
+    (StatusCode::OK, pretty_json_orders)
 }

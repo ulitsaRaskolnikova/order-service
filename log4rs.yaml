@@ -1,0 +1,26 @@
+refresh_rate: 30 seconds
+
+appenders:
+  stdout:
+    kind: console
+    encoder:
+      pattern: "{d} - {l} - {m}\n"
+  file:
+    kind: file
+    path: "logs/output.log"
+    encoder:
+      pattern: "{d} - {l} - {m}\n"
+
+root:
+  level: info
+  appenders:
+    - stdout
+    - file
+
+loggers:
+  sqlx::query:
+    level: error
+    appenders:
+      - stdout
+      - file
+    additive: false

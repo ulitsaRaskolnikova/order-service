@@ -2,3 +2,5 @@ curl --header "Content-Type: application/json" \
   --request POST \
   --data @model.json \
   http://localhost:8081/add_order
+
+curl http://localhost:8081/get_orders

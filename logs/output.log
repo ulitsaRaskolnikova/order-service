@@ -1,0 +1,45 @@
+2024-09-12T12:24:50.843663+03:00 - INFO - Starting server...
+2024-09-12T12:24:52.235426+03:00 - INFO - relation "_sqlx_migrations" already exists, skipping
+2024-09-12T12:24:53.022081+03:00 - INFO - Listening on 127.0.0.1:8081
+2024-09-12T13:59:00.904326+03:00 - INFO - Starting server...
+2024-09-12T13:59:01.155213+03:00 - INFO - relation "_sqlx_migrations" already exists, skipping
+2024-09-12T13:59:01.251766+03:00 - INFO - Listening on 127.0.0.1:8081
+2024-09-12T15:22:29.710994+03:00 - INFO - Starting server...
+2024-09-12T15:22:29.752132+03:00 - INFO - relation "_sqlx_migrations" already exists, skipping
+2024-09-12T15:22:29.779819+03:00 - INFO - Listening on 127.0.0.1:8081
+2024-09-12T15:23:47.333698+03:00 - INFO - Starting to add order to the database: "b563feb7b2b84b6test"
+2024-09-12T15:23:47.333936+03:00 - INFO - Inserting delivery: Delivery { name: "Test Testov", phone: "+9720000000", zip: "2639809", city: "Kiryat Mozkin", address: "Ploshad Mira 15", region: "Kraiot", email: "test@gmail.com" }
+2024-09-12T15:23:47.342409+03:00 - INFO - Delivery inserted with ID: 8
+2024-09-12T15:23:47.342507+03:00 - INFO - Inserting payment: "b563feb7b2b84b6test"
+2024-09-12T15:23:47.352813+03:00 - ERROR - Failed to add order: Database(PgDatabaseError { severity: Error, code: "23505", message: "duplicate key value violates unique constraint \"payment_pkey\"", detail: Some("Key (transaction)=(b563feb7b2b84b6test) already exists."), hint: None, position: None, where: None, schema: Some("public"), table: Some("payment"), column: None, data_type: None, constraint: Some("payment_pkey"), file: Some("nbtinsert.c"), line: Some(673), routine: Some("_bt_check_unique") })
+2024-09-12T15:23:47.466259+03:00 - INFO - Fetched all orders
+2024-09-12T15:28:10.833472+03:00 - INFO - Starting to add order to the database: "b563feb7b2b84b6test"
+2024-09-12T15:28:10.833717+03:00 - INFO - Inserting delivery: Delivery { name: "Test Testov", phone: "+9720000000", zip: "2639809", city: "Kiryat Mozkin", address: "Ploshad Mira 15", region: "Kraiot", email: "test@gmail.com" }
+2024-09-12T15:28:10.837309+03:00 - INFO - Delivery inserted with ID: 9
+2024-09-12T15:28:10.837346+03:00 - INFO - Inserting payment: "b563feb7b2b84b6test"
+2024-09-12T15:28:10.838948+03:00 - INFO - Payment inserted: b563feb7b2b84b6test
+2024-09-12T15:28:10.838978+03:00 - INFO - Inserting order: "b563feb7b2b84b6test"
+2024-09-12T15:28:10.842414+03:00 - INFO - Order inserted: "b563feb7b2b84b6test"
+2024-09-12T15:28:10.842452+03:00 - INFO - Inserting item: 9934930
+2024-09-12T15:28:10.843803+03:00 - ERROR - Failed to add order: Database(PgDatabaseError { severity: Error, code: "23505", message: "duplicate key value violates unique constraint \"item_pkey\"", detail: Some("Key (chrt_id)=(9934930) already exists."), hint: None, position: None, where: None, schema: Some("public"), table: Some("item"), column: None, data_type: None, constraint: Some("item_pkey"), file: Some("nbtinsert.c"), line: Some(673), routine: Some("_bt_check_unique") })
+2024-09-12T15:28:10.946816+03:00 - INFO - Fetched all orders
+2024-09-12T15:28:45.031648+03:00 - INFO - Starting to add order to the database: "b563feb7b2b84b6test"
+2024-09-12T15:28:45.031889+03:00 - INFO - Inserting delivery: Delivery { name: "Test Testov", phone: "+9720000000", zip: "2639809", city: "Kiryat Mozkin", address: "Ploshad Mira 15", region: "Kraiot", email: "test@gmail.com" }
+2024-09-12T15:28:45.033266+03:00 - INFO - Delivery inserted with ID: 10
+2024-09-12T15:28:45.033304+03:00 - INFO - Inserting payment: "b563feb7b2b84b6test"
+2024-09-12T15:28:45.034214+03:00 - ERROR - Failed to add order: Database(PgDatabaseError { severity: Error, code: "23505", message: "duplicate key value violates unique constraint \"payment_pkey\"", detail: Some("Key (transaction)=(b563feb7b2b84b6test) already exists."), hint: None, position: None, where: None, schema: Some("public"), table: Some("payment"), column: None, data_type: None, constraint: Some("payment_pkey"), file: Some("nbtinsert.c"), line: Some(673), routine: Some("_bt_check_unique") })
+2024-09-12T15:28:45.049298+03:00 - INFO - Fetched all orders
+2024-09-12T15:30:04.320469+03:00 - INFO - Starting to add order to the database: "b563feb7b2b84b6test"
+2024-09-12T15:30:04.320697+03:00 - INFO - Inserting delivery: Delivery { name: "Test Testov", phone: "+9720000000", zip: "2639809", city: "Kiryat Mozkin", address: "Ploshad Mira 15", region: "Kraiot", email: "test@gmail.com" }
+2024-09-12T15:30:04.322323+03:00 - INFO - Delivery inserted with ID: 11
+2024-09-12T15:30:04.322356+03:00 - INFO - Inserting payment: "b563feb7b2b84b6test"
+2024-09-12T15:30:04.323455+03:00 - INFO - Payment inserted: b563feb7b2b84b6test
+2024-09-12T15:30:04.323490+03:00 - INFO - Inserting order: "b563feb7b2b84b6test"
+2024-09-12T15:30:04.324788+03:00 - INFO - Order inserted: "b563feb7b2b84b6test"
+2024-09-12T15:30:04.324850+03:00 - INFO - Inserting item: 9934930
+2024-09-12T15:30:04.325882+03:00 - INFO - Item inserted: 9934930
+2024-09-12T15:30:04.325914+03:00 - INFO - Inserting order_item: order_uid: "b563feb7b2b84b6test", item_chrt_id: 9934930
+2024-09-12T15:30:04.327518+03:00 - INFO - Order item inserted: order_uid: "b563feb7b2b84b6test", item_chrt_id: 9934930
+2024-09-12T15:30:04.327551+03:00 - INFO - Order successfully added to the database: "b563feb7b2b84b6test"
+2024-09-12T15:30:04.327742+03:00 - INFO - Order added successfully: Order { order_uid: "b563feb7b2b84b6test", track_number: "WBILMTESTTRACK", entry: "WBIL", delivery: Delivery { name: "Test Testov", phone: "+9720000000", zip: "2639809", city: "Kiryat Mozkin", address: "Ploshad Mira 15", region: "Kraiot", email: "test@gmail.com" }, payment: Payment { transaction: "b563feb7b2b84b6test", request_id: "", currency: "USD", provider: "wbpay", amount: 1817, payment_dt: 1637907727, bank: "alpha", delivery_cost: 1500, goods_total: 317, custom_fee: 0 }, items: [Item { chrt_id: 9934930, track_number: "WBILMTESTTRACK", price: 453, rid: "ab4219087a764ae0btest", name: "Mascaras", sale: 30, size: "0", total_price: 317, nm_id: 2389212, brand: "Vivienne Sabo", status: 202 }], locale: "en", internal_signature: "", customer_id: "test", delivery_service: "meest", shardkey: "9", sm_id: 99, date_created: "2021-11-26T06:22:19Z", oof_shard: "1" }
+2024-09-12T15:30:04.344479+03:00 - INFO - Fetched all orders
