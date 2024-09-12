@@ -2,7 +2,7 @@ use std::sync::Arc;
 use axum::{Router, routing::{get, post}, extract::State, Json, response::IntoResponse, http::StatusCode};
 use tokio::sync::RwLock;
 use serde_json::json;
-use sqlx::{Pool, postgres::Postgres};
+use tokio_postgres::{NoTls, Client};
 use dotenvy::dotenv;
 use log::info;
 use log4rs;
@@ -25,16 +25,22 @@ async fn main() {
     let server_address = std::env::var("SERVER_ADDRESS").unwrap_or("127.0.0.1:8081".to_owned());
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL not found in env file");
 
-    let pool = sqlx::postgres::PgPool::connect(&database_url)
+    // Настраиваем подключение к базе данных через tokio_postgres
+    let (client, connection) = tokio_postgres::connect(&database_url, NoTls)
         .await
         .expect("Can't connect to database");
 
-    sqlx::migrate!("./migrations").run(&pool).await.expect("Migration failed");
+    // Запускаем соединение с базой данных в фоновом режиме
+    tokio::spawn(async move {
+        if let Err(e) = connection.await {
+            log::error!("Database connection error: {}", e);
+        }
+    });
 
     let app = Router::new()
         .route("/add_order", post(add_order))
         .route("/get_orders", get(get_orders))
-        .with_state(Arc::new(RwLock::new(OrdersState { orders: Vec::new(), pool })));
+        .with_state(Arc::new(RwLock::new(OrdersState { orders: Vec::new(), client })));
 
     info!("Listening on {}", server_address);
 
@@ -45,11 +51,9 @@ async fn main() {
 }
 
 type OrdersStateType = Arc<RwLock<OrdersState>>;
-
-#[derive(Clone)]
 pub struct OrdersState {
     pub orders: Vec<Order>,
-    pub pool: Pool<Postgres>,
+    pub client: Client,
 }
 
 pub async fn add_order(
@@ -59,7 +63,7 @@ pub async fn add_order(
     let mut state = state.write().await;
     state.orders.push(order.clone());
 
-    match database::add_order_to_db(&order, &state.pool).await {
+    match database::add_order_to_db(&order, &state.client).await {
         Ok(_) => {
             info!("Order added successfully: {:?}", order);
             let pretty_json_order = serde_json::to_string_pretty(&order).unwrap();

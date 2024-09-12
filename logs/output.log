@@ -43,3 +43,11 @@
 2024-09-12T15:30:04.327551+03:00 - INFO - Order successfully added to the database: "b563feb7b2b84b6test"
 2024-09-12T15:30:04.327742+03:00 - INFO - Order added successfully: Order { order_uid: "b563feb7b2b84b6test", track_number: "WBILMTESTTRACK", entry: "WBIL", delivery: Delivery { name: "Test Testov", phone: "+9720000000", zip: "2639809", city: "Kiryat Mozkin", address: "Ploshad Mira 15", region: "Kraiot", email: "test@gmail.com" }, payment: Payment { transaction: "b563feb7b2b84b6test", request_id: "", currency: "USD", provider: "wbpay", amount: 1817, payment_dt: 1637907727, bank: "alpha", delivery_cost: 1500, goods_total: 317, custom_fee: 0 }, items: [Item { chrt_id: 9934930, track_number: "WBILMTESTTRACK", price: 453, rid: "ab4219087a764ae0btest", name: "Mascaras", sale: 30, size: "0", total_price: 317, nm_id: 2389212, brand: "Vivienne Sabo", status: 202 }], locale: "en", internal_signature: "", customer_id: "test", delivery_service: "meest", shardkey: "9", sm_id: 99, date_created: "2021-11-26T06:22:19Z", oof_shard: "1" }
 2024-09-12T15:30:04.344479+03:00 - INFO - Fetched all orders
+2024-09-12T15:58:41.920337+03:00 - INFO - Starting server...
+2024-09-12T15:58:41.946243+03:00 - INFO - Listening on 127.0.0.1:8081
+2024-09-12T15:59:02.001119+03:00 - INFO - Starting to add order to the database: "b563feb7b2b84b6test"
+2024-09-12T15:59:02.001411+03:00 - INFO - Inserting delivery: Delivery { name: "Test Testov", phone: "+9720000000", zip: "2639809", city: "Kiryat Mozkin", address: "Ploshad Mira 15", region: "Kraiot", email: "test@gmail.com" }
+2024-09-12T15:59:02.021290+03:00 - INFO - Delivery inserted with ID: 12
+2024-09-12T15:59:02.021411+03:00 - INFO - Inserting payment: "b563feb7b2b84b6test"
+2024-09-12T15:59:02.025292+03:00 - ERROR - Failed to add order: Error { kind: Db, cause: Some(DbError { severity: "ERROR", parsed_severity: Some(Error), code: SqlState(E23505), message: "duplicate key value violates unique constraint \"payment_pkey\"", detail: Some("Key (transaction)=(b563feb7b2b84b6test) already exists."), hint: None, position: None, where_: None, schema: Some("public"), table: Some("payment"), column: None, datatype: None, constraint: Some("payment_pkey"), file: Some("nbtinsert.c"), line: Some(673), routine: Some("_bt_check_unique") }) }
+2024-09-12T15:59:02.089210+03:00 - INFO - Fetched all orders

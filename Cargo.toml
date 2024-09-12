@@ -14,7 +14,7 @@ serde = {version = "1.0", features = ["derive"]}
 serde_json = "1.0.128"
 
 # sql
-sqlx = {version = "0.8.2", features = ["postgres", "runtime-tokio-rustls"]}
+tokio-postgres = "0.7.11"
 
 # env
 dotenvy = "0.15.7"
