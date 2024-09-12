@@ -2,5 +2,5 @@
 src/.main.rs.swp
 .env
 .vscode
-logs
+logs/
 

@@ -3,7 +3,7 @@ use axum::{Router, routing::{get, post}, extract::State, Json, response::IntoRes
 use tokio::sync::RwLock;
 use serde_json::json;
 use tokio_postgres::{NoTls, Client};
-use log::info;
+use log::{info, error};
 
 mod database;
 mod model;
@@ -46,9 +46,6 @@ async fn main() {
     // Логируем запуск сервера
     info!("Starting server...");
 
-    //let server_address = std::env::var("SERVER_ADDRESS").unwrap_or("127.0.0.1:8081".to_owned());
-    //let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL not found in env file");
-
     let args = Args::parse();
 
     let server_address = format!("{}:{}", args.server_host, args.server_port);
@@ -64,14 +61,28 @@ async fn main() {
     // Запускаем соединение с базой данных в фоновом режиме
     tokio::spawn(async move {
         if let Err(e) = connection.await {
-            log::error!("Database connection error: {}", e);
+            error!("Database connection error: {}", e);
         }
     });
 
     let app = Router::new()
-        .route("/add_order", post(add_order))
-        .route("/get_orders", get(get_orders))
-        .with_state(Arc::new(RwLock::new(OrdersState { orders: Vec::new(), client })));
+    .route("/add_order", post(add_order))
+    .route("/get_orders", get(get_orders))
+    .with_state(Arc::new(RwLock::new(
+        OrdersState { 
+            orders: match database::get_all_orders(&client).await {
+                Ok(orders) => {
+                    info!("Successfully get orders: {:?}", orders);
+                    orders
+                }
+                Err(e) => {
+                    error!("Failed to get orders: {:?}", e);
+                    Vec::new() // Возвращаем пустой вектор в случае ошибки
+                }
+            },
+            client
+        }
+    )));
 
     info!("Listening on {}", server_address);
 
@@ -92,11 +103,11 @@ pub async fn add_order(
     Json(order): Json<Order>
 ) -> impl IntoResponse {
     let mut state = state.write().await;
-    state.orders.push(order.clone());
-
-    match database::add_order_to_db(&order, &state.client).await {
+    
+    match database::save_order(&order, &state.client).await {
         Ok(_) => {
             info!("Order added successfully: {:?}", order);
+            state.orders.push(order.clone());
             let pretty_json_order = serde_json::to_string_pretty(&order).unwrap();
             (StatusCode::OK, pretty_json_order)
         }
@@ -105,7 +116,7 @@ pub async fn add_order(
                 "success": false,
                 "message": e.to_string(),
             });
-            log::error!("Failed to add order: {:?}", e);
+            error!("Failed to add order: {:?}", e);
             (StatusCode::INTERNAL_SERVER_ERROR, error_response.to_string())
         }
     }
