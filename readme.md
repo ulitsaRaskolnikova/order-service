@@ -10,4 +10,5 @@
 ```bash
 cargo run -- --server-host 127.0.0.1 --server-port 8081 --db-user axum_postgres --db-password axum_postgres --db-name axum_postgres --db-host 127.0.0.1 --db-port 5432
 ```
-
+## Тестирование http-запросов
+В файле `test_request` находятся три запроса: один тестирует вставку неправильного json, другой - правильного, третий - получения всех заказов. 
