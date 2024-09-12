@@ -3,17 +3,42 @@ use axum::{Router, routing::{get, post}, extract::State, Json, response::IntoRes
 use tokio::sync::RwLock;
 use serde_json::json;
 use tokio_postgres::{NoTls, Client};
-use dotenvy::dotenv;
 use log::info;
 
 mod database;
 mod model;
 use model::Order;
+use clap::{self, Parser};
+
+#[derive(Parser, Debug)]
+#[command(version, about, long_about = None)]
+struct Args {
+    /// Your server host
+    #[clap(long, env)]
+    server_host: String,
+    /// Your host port
+    #[clap(long, env)]
+    server_port: u16,
+    /// Database user
+    #[clap(long, env)]
+    db_user: String,
+    /// Database user's password
+    #[clap(long, env)]
+    db_password: String,
+    /// Name of database
+    #[clap(long, env)]
+    db_name: String,
+    /// Your database host
+    #[clap(long, env)]
+    db_host: String,
+    /// Your database port
+    #[clap(long, env)]
+    db_port: u16
+}
 
 #[tokio::main]
 async fn main() {
-    // Инициализируем dotenv
-    dotenv().expect("Unable to access .env file");
+    dotenvy::dotenv().ok();
 
     // Инициализация log4rs
     log4rs::init_file("log4rs.yaml", Default::default()).unwrap();
@@ -21,9 +46,16 @@ async fn main() {
     // Логируем запуск сервера
     info!("Starting server...");
 
-    let server_address = std::env::var("SERVER_ADDRESS").unwrap_or("127.0.0.1:8081".to_owned());
-    let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL not found in env file");
+    //let server_address = std::env::var("SERVER_ADDRESS").unwrap_or("127.0.0.1:8081".to_owned());
+    //let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL not found in env file");
 
+    let args = Args::parse();
+
+    let server_address = format!("{}:{}", args.server_host, args.server_port);
+    let database_url = format!(
+        "postgres://{}:{}@{}:{}/{}",
+        args.db_user, args.db_password, args.db_host, args.db_port, args.db_name
+    );
     // Настраиваем подключение к базе данных через tokio_postgres
     let (client, connection) = tokio_postgres::connect(&database_url, NoTls)
         .await

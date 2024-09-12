@@ -16,9 +16,12 @@ serde_json = "1.0.128"
 # sql
 tokio-postgres = "0.7.11"
 
-# env
-dotenvy = "0.15.7"
-
 # log
 log = "0.4"
 log4rs = "1.2" 
+
+# args
+clap = {version = "4.5.17", features = ["derive", "env"]}
+
+# env
+dotenvy = "0.15.7"
