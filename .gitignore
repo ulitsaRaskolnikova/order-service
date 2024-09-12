@@ -1,6 +1,5 @@
 /target
-src/.main.rs.swp
 .env
-.vscode
-logs/
+/.vscode
+/logs
 
