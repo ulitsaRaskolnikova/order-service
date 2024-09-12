@@ -3,6 +3,7 @@ use tokio_postgres::Client;
 use crate::model::{Order, Delivery, Payment, Item};
 use log::info;
 
+// Сохраняем заказ в базу данных
 pub async fn save_order(order: &Order, client: &Client) -> Result<(), Box<dyn Error>> {
     info!("Starting to add order to the database: {:?}", order.order_uid);
 
@@ -175,6 +176,7 @@ async fn insert_order_item(order: &Order, item: &Item, client: &Client) -> Resul
     Ok(())
 }
 
+// Получаем все заказы из БД
 pub async fn get_all_orders(client: &Client) -> Result<Vec<Order>, Box<dyn Error>> {
     let rows = client
         .query(
@@ -216,7 +218,7 @@ pub async fn get_all_orders(client: &Client) -> Result<Vec<Order>, Box<dyn Error
             oof_shard: row.get("oof_shard"),
             delivery,
             payment,
-            items: vec![], // Загрузим позже
+            items: vec![],
         };
 
         order.items = get_items_for_order(client, &order.order_uid).await?;
