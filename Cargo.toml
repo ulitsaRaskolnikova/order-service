@@ -25,3 +25,9 @@ clap = {version = "4.5.17", features = ["derive", "env"]}
 
 # env
 dotenvy = "0.15.7"
+
+# tests
+hyper = { version = "1.4.1", features = ["client", "http1"] }
+tower = "0.5.1"
+async-trait = "0.1"
+mockall = "0.13.0"
