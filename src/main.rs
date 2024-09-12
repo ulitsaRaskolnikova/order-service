@@ -5,7 +5,6 @@ use serde_json::json;
 use tokio_postgres::{NoTls, Client};
 use dotenvy::dotenv;
 use log::info;
-use log4rs;
 
 mod database;
 mod model;

@@ -8,11 +8,11 @@ pub async fn add_order_to_db(order: &Order, client: &Client) -> Result<(), Box<d
 
     let delivery_id = insert_delivery_to_db(&order.delivery, client).await?;
     insert_payment_to_db(&order.payment, client).await?;
-    insert_order_to_db(&order, client, delivery_id).await?;
+    insert_order_to_db(order, client, delivery_id).await?;
 
     for item in &order.items {
-        insert_item_to_db(&item, client).await?;
-        insert_order_item_to_db(&order, &item, client).await?;
+        insert_item_to_db(item, client).await?;
+        insert_order_item_to_db(order, item, client).await?;
     }
 
     info!("Order successfully added to the database: {:?}", order.order_uid);
