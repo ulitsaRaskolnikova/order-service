@@ -1,5 +1,10 @@
 curl --header "Content-Type: application/json" \
   --request POST \
+  --data '{"check": "bad", "request": "babe"}' \
+  http://localhost:8081/add_order
+
+curl --header "Content-Type: application/json" \
+  --request POST \
   --data @model.json \
   http://localhost:8081/add_order
 
